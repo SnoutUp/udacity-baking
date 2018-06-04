@@ -4,4 +4,6 @@
 
     <string name="string_servings">%d servings</string>
     <string name="title_activity_recipe_widget_config">Choose Widget Recipe</string>
+
+    <string name="error_data_failed_to_load">Data failed to load</string>
 </resources>

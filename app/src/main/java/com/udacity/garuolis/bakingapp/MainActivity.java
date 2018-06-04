@@ -4,6 +4,10 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.widget.Toast;
 
 import com.udacity.garuolis.bakingapp.generated.Provider;
 import com.udacity.garuolis.bakingapp.model.Ingredient;
@@ -23,6 +28,7 @@ import com.udacity.garuolis.bakingapp.provider.RecipeProvider;
 import com.udacity.garuolis.bakingapp.provider.StepColumns;
 import com.udacity.garuolis.bakingapp.utils.ApiUtils;
 import com.udacity.garuolis.bakingapp.utils.RecipeApi;
+import com.udacity.garuolis.bakingapp.utils.SimpleIdlingResource;
 
 import java.util.List;
 
@@ -39,6 +45,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity  implements RecipeListAdapter.OnInteractionListener{
 
     RecipeListAdapter mAdapter;
+
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +129,7 @@ public class MainActivity extends AppCompatActivity  implements RecipeListAdapte
 
             @Override
             public void onError(Throwable e) {
-
+                Toast.makeText(getBaseContext(), R.string.error_data_failed_to_load, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -126,7 +144,6 @@ public class MainActivity extends AppCompatActivity  implements RecipeListAdapte
 
     @Override
     public void onItemSelected(int recipeId) {
-        Log.v("mano", "recipe id clicked: " + recipeId);
         showRecipeActivity(recipeId);
     }
 }

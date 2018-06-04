@@ -1,4 +1,0 @@
-#Mon Jun 04 17:50:56 EEST 2018
-base.0=D\:\\Dev\\android\\nanodegree\\baking-app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
-path.0=classes.dex
-renamed.0=classes.dex
