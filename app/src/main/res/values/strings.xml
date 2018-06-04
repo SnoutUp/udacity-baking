@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Baking App</string>
+    <string name="title_activity_recipe">Recipe</string>
+
+    <string name="string_servings">%d servings</string>
+    <string name="title_activity_recipe_widget_config">Choose Widget Recipe</string>
+</resources>

@@ -1,0 +1,43 @@
+{
+    "logs": [
+        {
+            "outputFile": "D:\\Dev\\android\\nanodegree\\baking-app\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-w900dp-v13\\values-w900dp-v13.xml",
+            "map": [
+                {
+                    "source": "D:\\Dev\\android\\nanodegree\\baking-app\\app\\src\\main\\res\\values-w900dp\\dimens.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "57",
+                        "endColumns": "48",
+                        "endOffsets": "101"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "48",
+                        "endOffsets": "99"
+                    }
+                },
+                {
+                    "source": "D:\\Dev\\android\\nanodegree\\baking-app\\app\\src\\main\\res\\values-w900dp\\ints.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "57",
+                        "endColumns": "44",
+                        "endOffsets": "97"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "104",
+                        "endColumns": "44",
+                        "endOffsets": "144"
+                    }
+                }
+            ]
+        }
+    ]
+}
