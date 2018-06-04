@@ -1,6 +1,6 @@
 # Baking App
 
-Udacity Android Nanodegree exercise Backing App
+Udacity Android Nanodegree exercise Baking App
 
 Student: Aurimas Garuolis
 
