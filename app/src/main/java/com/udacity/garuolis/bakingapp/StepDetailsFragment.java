@@ -41,6 +41,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 import com.udacity.garuolis.bakingapp.provider.IngredientColumns;
 import com.udacity.garuolis.bakingapp.provider.RecipeProvider;
 import com.udacity.garuolis.bakingapp.provider.StepColumns;
@@ -53,6 +54,7 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
     public static final String ARG_STEP_ID          = "step-id";
 
     public static final String KEY_PLAYER_POSITION  = "player-position";
+    public static final String KEY_PLAY_ON_READY    = "player-play-on-ready";
 
     OnStepNavigationListener mListener;
 
@@ -68,10 +70,14 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
 
     private ExoPlayer mPlayer;
     private long mPlayerPosition;
-
     private int mRecipeId;
     private int mStepId;
+    private boolean mPlayOnReady = false;
+
     private boolean hastNextStep = false;
+
+    String mVideoUrl = "";
+    String mThumbnail = "";
 
     public StepDetailsFragment() {
         // Required empty public constructor
@@ -90,7 +96,7 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
         }
     }
 
-    String mVideoUrl = "";
+
 
     private void updateActionButtons() {
         mBtnNext.setVisibility(hastNextStep ? View.VISIBLE : View.GONE);
@@ -109,13 +115,18 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
                 stepCursor.moveToFirst();
                 hastNextStep = (stepCursor.getCount() > 1);
 
-                mVideoUrl = stepCursor.getString(stepCursor.getColumnIndex(StepColumns.VIDEO_URL));
+                mVideoUrl   = stepCursor.getString(stepCursor.getColumnIndex(StepColumns.VIDEO_URL));
+                mThumbnail  = stepCursor.getString(stepCursor.getColumnIndex(StepColumns.THUMBNAIL_URL));
 
                 String description = stepCursor.getString(stepCursor.getColumnIndex(StepColumns.DESCRIPTION));
                 String shortDescription = stepCursor.getString(stepCursor.getColumnIndex(StepColumns.SHORT_DESCRIPTION));
 
                 mShortDescriptionView.setText(shortDescription);
                 mDescriptionView.setText(description);
+
+                if (ApiUtils.ValidImageUrl(mThumbnail)) {
+                    Picasso.get().load(mThumbnail).into(mImage);
+                }
 
                 // Recipe introduction, show ingredients
                 if (mStepId == 0) {
@@ -152,7 +163,9 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
 
                 if (savedInstanceState != null) {
                     mPlayerPosition = savedInstanceState.getLong(KEY_PLAYER_POSITION);
+                    mPlayOnReady    = savedInstanceState.getBoolean(KEY_PLAY_ON_READY);
                 }
+
                 updateActionButtons();
             }
         }
@@ -175,7 +188,6 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
     @Override
     public void onResume() {
         super.onResume();
-
         if (ApiUtils.ValidVideoUrl(mVideoUrl)) {
             initPlayer(Uri.parse(mVideoUrl));
         }
@@ -191,11 +203,15 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
         void onStepChange(int newStep);
     }
 
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mPlayer != null) {
-            outState.putLong(KEY_PLAYER_POSITION, mPlayer.getCurrentPosition());
+            mPlayerPosition = mPlayer.getCurrentPosition();
+            mPlayOnReady = mPlayer.getPlayWhenReady();
+            outState.putLong(KEY_PLAYER_POSITION, mPlayerPosition);
+            outState.putBoolean(KEY_PLAY_ON_READY, mPlayOnReady);
         }
     }
 
@@ -218,7 +234,7 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
             mPlayer.prepare(mediaSource);
 
             mPlayer.seekTo(mPlayerPosition);
-            mPlayer.setPlayWhenReady(true);
+            mPlayer.setPlayWhenReady(mPlayOnReady);
 
             mPlayer.addListener(this);
         }
@@ -228,10 +244,8 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
 
     private void releasePlayer() {
         if (mPlayer != null) {
-            mPlayerPosition = mPlayer.getCurrentPosition();
             mPlayer.stop();
             mPlayer.release();
-            mPlayer = null;
         }
     }
 

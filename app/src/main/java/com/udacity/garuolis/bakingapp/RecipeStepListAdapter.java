@@ -31,11 +31,8 @@ public class RecipeStepListAdapter extends RecyclerView.Adapter<RecipeStepListAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-
         final int nr = mCursor.getInt(mCursor.getColumnIndex(StepColumns.NR));
-
         holder.mTitleView.setText(mCursor.getString(mCursor.getColumnIndex(StepColumns.SHORT_DESCRIPTION)));
-
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

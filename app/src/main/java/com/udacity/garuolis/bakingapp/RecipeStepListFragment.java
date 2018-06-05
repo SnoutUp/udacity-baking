@@ -15,16 +15,10 @@ import com.udacity.garuolis.bakingapp.provider.StepColumns;
 
 public class RecipeStepListFragment extends Fragment {
     public static final String ARG_RECIPE_ID = "recipe-id";
-
     private int mRecipeId = 0;
-
 
     private OnRecipeStepInteractionListener mListener;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public RecipeStepListFragment() {
     }
 

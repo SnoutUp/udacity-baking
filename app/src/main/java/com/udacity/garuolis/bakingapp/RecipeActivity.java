@@ -3,6 +3,7 @@ package com.udacity.garuolis.bakingapp;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
@@ -14,13 +15,14 @@ import com.udacity.garuolis.bakingapp.provider.RecipeColumns;
 import com.udacity.garuolis.bakingapp.provider.RecipeProvider;
 
 public class RecipeActivity extends AppCompatActivity implements RecipeStepListFragment.OnRecipeStepInteractionListener, StepDetailsFragment.OnStepNavigationListener {
+    private final static String TAG             = RecipeActivity.class.getName();
+
     public final static String EXTRA_ID         = "recipeId";
     public final static String EXTRA_STEP_NR    = "stepNr";
 
     public final static String TAG_STEP_FRAGMENT= "detailsFragment";
 
     public final static String EXTRA_TITLE  = "recipeTitle";
-    public final static String TAG = RecipeActivity.class.getName();
 
     public int mRecipeId    = 0;
     public int mMaxSteps    = 0;
@@ -37,10 +39,6 @@ public class RecipeActivity extends AppCompatActivity implements RecipeStepListF
         boolean isTablet = getResources().getBoolean(R.bool.tablet);
 
         Bundle bundle = getIntent().getExtras();
-        if (bundle == null && savedInstanceState != null) {
-            bundle = savedInstanceState;
-        }
-
         if (bundle != null) {
             mRecipeId = bundle.getInt(RecipeActivity.EXTRA_ID);
 
@@ -53,29 +51,55 @@ public class RecipeActivity extends AppCompatActivity implements RecipeStepListF
 
             if (isTablet) {
                 mSidebar = R.id.container_sidebar;
-                showStepDetails(0, false);
+                if (savedInstanceState == null) {
+                    showStepDetails(0, false);
+                }
             }
             showStepListFragment();
-
         }
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
+        /*
         int lastStep = savedInstanceState.getInt(EXTRA_STEP_NR);
-        showStepDetails(lastStep, true);
+        if (lastStep != -1) {
+            showStepDetails(lastStep, true);
+        }
+        */
+
+        if (savedInstanceState != null) {
+            try {
+                StepDetailsFragment savedStepFragment = (StepDetailsFragment) getSupportFragmentManager().getFragment(savedInstanceState, TAG_STEP_FRAGMENT);
+                if (savedStepFragment != null) {
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(mContainer, savedStepFragment, TAG_STEP_FRAGMENT);
+                    transaction.commit();
+                }
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Failed to restore fragment", e);
+            }
+        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        int step = -1;
         StepDetailsFragment myFragment = (StepDetailsFragment)getSupportFragmentManager().findFragmentByTag(TAG_STEP_FRAGMENT);
         if (myFragment != null && myFragment.isVisible()) {
-           int step = myFragment.getCurrentStep();
-           outState.putInt(EXTRA_STEP_NR, step);
+            step = myFragment.getCurrentStep();
+            getSupportFragmentManager().putFragment(outState, TAG_STEP_FRAGMENT, myFragment);
         }
+        outState.putInt(EXTRA_STEP_NR, step);
+
+/*
+        if (getSupportFragmentManager().findFragmentByTag(TAG_STEP_FRAGMENT) != null && mStepFragment != null) {
+            getSupportFragmentManager().putFragment(outState, TAG_STEP_FRAGMENT, mStepFragment);
+        }
+        */
+
     }
 
     public void showStepListFragment() {
@@ -114,6 +138,7 @@ public class RecipeActivity extends AppCompatActivity implements RecipeStepListF
         if (item.getItemId() == android.R.id.home) {
             // go back to the step list if ActionBar home button pressed
             // instead of moving all the way through the Fragment backstack
+
             FragmentManager fm = getSupportFragmentManager();
             for(int i = 0; i < fm.getBackStackEntryCount() - 1; ++i) {
                 fm.popBackStack();
